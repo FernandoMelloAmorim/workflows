@@ -1,25 +1,15 @@
-name: build
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+name: CI
+
+on: [push]
+
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-20.04
+  scan:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.20.0
+      - name: Scan for vulnerabilities
+        uses: aquasecurity/trivy-action@v0.4.1
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+          image-ref: 'YOUR_DOCKER_IMAGE:YOUR_TAG'
