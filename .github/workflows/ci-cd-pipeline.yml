@@ -10,6 +10,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Scan for vulnerabilities
-        uses: aquasecurity/trivy-action@v0.4.1
+        uses: aquasecurity/trivy-action@v0.5.0
         with:
           image-ref: 'YOUR_DOCKER_IMAGE:YOUR_TAG'
+
