@@ -17,7 +17,7 @@ jobs:
       run: docker build -t myapp:latest .
 
     - name: Run Security Scan with Trivy
-      uses: aquasecurity/trivy-action@v0.2.0
+      uses: aquasecurity/trivy-action@v0.4.1
       with:
         image-ref: myapp:latest
         format: 'table'
