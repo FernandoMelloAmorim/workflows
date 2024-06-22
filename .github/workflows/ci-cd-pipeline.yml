@@ -16,13 +16,17 @@ jobs:
     - name: Build Docker Image
       run: docker build -t myapp:latest .
 
-    - name: Run Security Scan with Trivy
-      uses: aquasecurity/trivy-action@v0.20.0
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@0.20.0
       with:
-        image-ref: myapp:latest
-        format: 'table'
-        exit-code: '0'
-        severity: 'HIGH,CRITICAL'
+        image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
 
     - name: Push Docker Image
       run: docker push myapp:latest
