@@ -1,38 +1,25 @@
-name: CodeQL Analysis
-
+name: build
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-
 jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write  # Required for uploading SARIF files
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript' ]  # Add more languages as needed
-
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: 'security'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
